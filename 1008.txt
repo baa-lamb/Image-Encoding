@@ -1,0 +1,168 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <string>
+
+using namespace std;
+
+queue<pair<int,int>> Q;
+
+void search (int one_way[11][11], int a)
+{
+	pair <int, int> my_p = Q.front();
+	pair <int, int> my_p1;
+
+	if (a > 1)
+	{
+		if (one_way[my_p.first][my_p.second+1] == 1)
+		{
+			my_p1.first = my_p.first;
+			my_p1.second = my_p.second + 1;
+			if (Q.back() != my_p1)
+			{
+				Q.push(my_p1);
+				cout << 'R';
+			}
+		}
+		if (one_way[my_p.first-1][my_p.second] == 1)
+		{
+			my_p1.first = my_p.first-1;
+			my_p1.second = my_p.second;
+			if (Q.back() != my_p1)
+			{
+				cout << 'T';
+				Q.push(my_p1);
+			}
+		}
+		if (one_way[my_p.first][my_p.second-1] == 1)
+		{
+			my_p1.first = my_p.first;
+			my_p1.second = my_p.second-1;
+			if (Q.back() != my_p1)
+			{
+				cout << 'L';
+				Q.push(my_p1);
+			}
+		}
+		if (one_way[my_p.first+1][my_p.second] == 1)
+		{
+			my_p1.first = my_p.first+1;
+			my_p1.second = my_p.second;
+			if (Q.back() != my_p1)
+			{
+				cout << 'B';
+				Q.push(my_p1);
+			}
+		}	
+		cout << ',' << endl;
+		one_way[my_p.first][my_p.second] = 0;
+		Q.pop();
+	}
+	else 
+		return;
+	
+	search(one_way,a-1);	
+}
+
+void print(int arr[11][11], int count)
+{
+	cout << count << endl;
+	for (int i = 1; i < 11; i++)
+		for (int j = 1; j < 11; j++)
+			if(arr[i][j] == 1)
+				cout << i << ' ' << j << endl;
+}
+
+int main ()
+{
+	int one_way[11][11] = {0};
+
+	pair<int, int> my_p;
+
+	int x = 0,
+		y = 0,
+	    first_x = 0,
+		first_y = 0;
+
+	string s;
+	getline (cin, s);
+
+	if (s.find(' ') == string::npos)
+	{
+		int a = stoi(s);
+		cin >> y >> x;
+		first_x = 10 - x;
+		first_y = y;
+		one_way[10-x][y] = 1;
+
+		my_p.first = first_x;
+		my_p.second = first_y;
+
+		Q.push(my_p);
+		for (int i = 1; i < a; i++)
+		{
+			cin >> y >> x;
+			one_way[10-x][y] = 1;
+		}
+
+		cout << endl;
+		cout << first_y << " " << 10 - first_x << endl;
+		search(one_way,a);
+		cout << '.' << endl;
+	}
+	else  
+	{
+		int count = 0;
+		first_x = stoi(s);
+		first_y = stoi(s.substr(2));
+		pair <int, int> m;
+		m.first = first_x;
+		m.second = first_y;
+		Q.push(m);
+		string str;
+		pair<int,int> new_m;
+		while(1)
+		{
+			getline (cin, str);
+			m = Q.front();
+			Q.pop();
+			one_way[m.first][m.second] = 1;
+			count++;
+
+			if (str[0] == '.')
+				break;
+
+			for (int i = 0; i < str.length(); i++)
+			{
+				switch (str[i])
+				{
+				case 'R' :
+					new_m.first = m.first+1;
+					new_m.second = m.second;
+					Q.push(new_m);
+					break;
+				case 'T' :
+					new_m.first = m.first;
+					new_m.second = m.second+1;
+					Q.push(new_m);
+					break;
+				case 'L' :
+					new_m.first = m.first-1;
+					new_m.second = m.second;
+					Q.push(new_m);
+					break;
+				case 'B' :
+					new_m.first = m.first;
+					new_m.second = m.second-1;
+					Q.push(new_m);
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		print(one_way, count);
+	}
+
+	return 0;
+}
